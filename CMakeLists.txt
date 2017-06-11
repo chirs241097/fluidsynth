@@ -159,8 +159,6 @@ if ( CMAKE_COMPILER_IS_GNUCC )
   set(CMAKE_C_STANDARD 11)
   set(CMAKE_C_STANDARD_REQUIRED ON)
   set(CMAKE_C_EXTENSIONS OFF)
-
-
 endif ( CMAKE_COMPILER_IS_GNUCC )
 
 # Windows
@@ -182,6 +180,7 @@ if ( WIN32 )
   if ( MINGW )
     set ( MINGW32 1 )
     add_definitions ( -mms-bitfields )
+    add_definitions ( -DWIN32 )
   endif  ( MINGW )
 else ( WIN32 )
 # Check PThreads, but not in Windows
@@ -495,7 +494,7 @@ include ( report )
 # CPack support
 set ( CPACK_PACKAGE_DESCRIPTION_SUMMARY "FluidSynth real-time synthesizer" )
 set ( CPACK_PACKAGE_VENDOR "fluidsynth.org" )
-set ( CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_SOURCE_DIR}/README" )
+set ( CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_SOURCE_DIR}/README.md" )
 set ( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/COPYING" )
 set ( CPACK_PACKAGE_VERSION_MAJOR ${FLUIDSYNTH_VERSION_MAJOR} )
 set ( CPACK_PACKAGE_VERSION_MINOR ${FLUIDSYNTH_VERSION_MINOR} )

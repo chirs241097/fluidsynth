@@ -175,7 +175,7 @@ typedef _mutex    fluid_cond_mutex_t;
 #define fluid_cond_mutex_lock(m)        _mutex_lock(m)
 #define fluid_cond_mutex_unlock(m)      _mutex_unlock(m)
 
-#endif
+#endif //HAVE_STDTHREADS_H
 
 static FLUID_INLINE fluid_cond_mutex_t *
 new_fluid_cond_mutex (void)
@@ -257,7 +257,7 @@ typedef _private fluid_private_t;
 #define fluid_private_get(_priv)                   _private_get(&_priv)
 #define fluid_private_set(_priv, _data)            _private_set(&_priv, _data)
 
-#endif
+#endif //HAVE_STDTHREADS_H
 
 /* Atomic operations */
 

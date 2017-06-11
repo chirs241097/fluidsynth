@@ -94,13 +94,17 @@ void _thread_create(_thread *th,_thread_func_t func,void* data)
 }
 void _thread_detach(_thread *th)
 {
+	if(!th->thrd)return;
 	((std::thread*)(th->thrd))->detach();
 	delete (std::thread*)(th->thrd);
+	th->thrd=nullptr;
 }
 void _thread_join(_thread *th)
 {
+	if(!th->thrd)return;
 	((std::thread*)(th->thrd))->join();
 	delete (std::thread*)(th->thrd);
+	th->thrd=nullptr;
 }
 void _thread_sleep(unsigned long us)
 {

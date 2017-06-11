@@ -369,6 +369,12 @@ fluid_is_soundfont(const char *filename)
  */
 unsigned int fluid_curtime(void)
 {
+#ifdef WIN32
+  long long f,t;
+  QueryPerformanceFrequency(&f);
+  QueryPerformanceCounter(&t);
+  return t*1000/f;
+#else
   static long initial_seconds = 0;
   struct timespec timeval;
 
@@ -380,6 +386,7 @@ unsigned int fluid_curtime(void)
   timespec_get (&timeval, TIME_UTC);
 
   return (unsigned int)((timeval.tv_sec - initial_seconds) * 1000.0 + timeval.tv_nsec / 1000000.0);
+#endif
 }
 
 /**
@@ -389,13 +396,19 @@ unsigned int fluid_curtime(void)
 double
 fluid_utime (void)
 {
+#ifdef WIN32
+  long long f,t;
+  QueryPerformanceFrequency(&f);
+  QueryPerformanceCounter(&t);
+  return t*1000000/f;
+#else
   struct timespec timeval;
 
   timespec_get (&timeval, TIME_UTC);
 
   return (timeval.tv_sec * 1000000.0 + timeval.tv_nsec/1000.);
+#endif
 }
-
 
 #if defined(WIN32)      /* Windoze specific stuff */
 
@@ -1184,6 +1197,19 @@ void fluid_socket_close (fluid_socket_t sock)
     closesocket (sock);
 }
 
+const char* inet_ntop(int af, const void* src, char* dst, int cnt)
+{
+	struct sockaddr_in srcaddr;
+
+	memset(&srcaddr, 0, sizeof(struct sockaddr_in));
+	memcpy(&(srcaddr.sin_addr), src, sizeof(srcaddr.sin_addr));
+
+	srcaddr.sin_family = af;
+	if (WSAAddressToString((struct sockaddr*) &srcaddr, sizeof(struct sockaddr_in), 0, dst, (LPDWORD) &cnt) != 0)
+		return NULL;
+	return dst;
+}
+
 static int fluid_server_socket_run (void *data)
 {
   fluid_server_socket_t *server_socket = (fluid_server_socket_t *)data;
@@ -1247,7 +1273,7 @@ new_fluid_server_socket(int port, fluid_server_func_t func, void* data)
   WSADATA wsaData;
   int retval;
 
-  g_return_val_if_fail (func != NULL, NULL);
+  fluid_return_val_if_fail (func != NULL, NULL);
 
   // Win32 requires initialization of winsock
   retval = WSAStartup (MAKEWORD (2,2), &wsaData);
