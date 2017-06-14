@@ -22,10 +22,10 @@ The goal of this fork is to revive the project by...
  - Resolving licensing issues by rewriting infringing modules.
    Read details of the issue [here](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=859793).
    ~~This will be always in the list unless it is solved by the original developers.~~
+
 Other changes include:
  - Complete removal of the automake based build system.
    It is year 2017, after all.
- - It seems that I have accidently broke the interactive shell interface. This will be fixed later.
 
 Chris Xiong, 2017
 

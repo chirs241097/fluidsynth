@@ -1799,10 +1799,6 @@ fluid_cmd_handler_register(fluid_cmd_handler_t* handler, fluid_cmd_t* cmd)
 {
   fluid_cmd_t* copy = fluid_cmd_copy(cmd);
   fluid_hashtable_insert(handler, copy->name, copy);
-  FLUID_FREE(copy->name);
-  FLUID_FREE(copy->topic);
-  FLUID_FREE(copy->help);
-  FLUID_FREE(copy);
   return FLUID_OK;
 }
 
@@ -1815,6 +1811,13 @@ fluid_cmd_handler_register(fluid_cmd_handler_t* handler, fluid_cmd_t* cmd)
 int
 fluid_cmd_handler_unregister(fluid_cmd_handler_t* handler, const char *cmd)
 {
+  fluid_cmd_t* ccmd;
+
+  ccmd = fluid_hashtable_lookup(handler, cmd);
+  FLUID_FREE(ccmd->name);
+  FLUID_FREE(ccmd->topic);
+  FLUID_FREE(ccmd->help);
+  FLUID_FREE(ccmd);
   return fluid_hashtable_remove(handler, cmd);
 }
 
