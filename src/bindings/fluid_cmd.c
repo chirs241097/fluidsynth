@@ -177,33 +177,57 @@ fluid_cmd_t fluid_commands[] = {
   { NULL, NULL, NULL, NULL, NULL }
 };
 
-int _shell_parse_argv(const char* s,int *c,char ***sv)//split stub
+//extremely ugly stub
+int _shell_parse_argv(const char* s,int *c,char ***sv)
 {
-	int anch,i;
+	int anch,i,tc=0,loop,oflag;
+	int qflag=0,dflag=0,ol;
+	char *tmp;
 	*c=0;
-	for(anch=0;;++*c)
+	for(anch=0;;++tc)
 	{
 		if(strchr(s+anch,' ')==NULL)break;
 		anch=strchr(s+anch,' ')-s+1;
 	}
-	if(s[0]&&!*c)++*c;
-	*sv=malloc((*c+1)*sizeof(char*));
-	(*sv)[*c]=NULL;
-	for(anch=i=0;;++i)
+	if(s[0])++tc;
+	*sv=calloc((tc+1),sizeof(char*));
+	for(anch=0,loop=1;loop;qflag||dflag?0:++*c)
 	{
 		if(strchr(s+anch,' ')==NULL)
 		{
-			(*sv)[i]=malloc(strlen(s+anch)*sizeof(char));
-			strcpy((*sv)[i],s+anch);break;
+			tmp=malloc(strlen(s+anch)*sizeof(char));
+			strcpy(tmp,s+anch);loop=0;
 		}
 		else
 		{
 			int len=strchr(s+anch,' ')-s-anch;
-			(*sv)[i]=malloc(len*sizeof(char));
-			strncpy((*sv)[i],s+anch,len-1);((*sv)[i])[len-1]=0;
+			tmp=malloc(len*sizeof(char));
+			strncpy(tmp,s+anch,len);tmp[len]=0;
 		}
+		oflag=qflag||dflag;
+		if(tmp[0]=='"'&&!qflag)
+		{
+			qflag=1;
+			for(i=1;tmp[i];++i)tmp[i-1]=tmp[i];
+			tmp[i-1]=0;
+		}
+		if(qflag&&tmp[strlen(tmp)-1]=='"')
+		{
+			qflag=0;
+			tmp[strlen(tmp)-1]=0;
+		}
+		if(tmp[strlen(tmp)-1]=='\\'){dflag=1;tmp[strlen(tmp)-1]=0;}
+		else dflag=0;
+		ol=(*sv)[*c]?strlen((*sv)[*c]):0;
+		(*sv)[*c]=realloc((*sv)[*c],(ol+strlen(tmp)+oflag)*sizeof(char));
+		if(!ol)(*sv)[*c][0]=0;
+		if(oflag)strcat((*sv)[*c]," ");
+		strcat((*sv)[*c],tmp);
+		free(tmp);
 		anch=strchr(s+anch,' ')-s+1;
 	}
+	*sv=realloc(*sv,(*c+1)*sizeof(char*));
+	for(i=0;i<*c;++i)puts((*sv)[i]);
 	return 1;
 }
 
